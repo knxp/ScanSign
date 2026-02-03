@@ -18,11 +18,30 @@
   }
 
   function renderList(listEl, items) {
+    function formatDate(isoStr) {
+      if (!isoStr) return '';
+      try {
+        const date = new Date(isoStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      } catch {
+        return '';
+      }
+    }
+
     listEl.innerHTML = '';
     items.forEach(e => {
       const li = document.createElement('li');
-      li.innerHTML = `<strong>${escapeHtml(e.name)}</strong> – ${escapeHtml(e.location)}
-        ${e.message ? `<div class="meta">${escapeHtml(e.message)}</div>` : ''}`;
+      const timestamp = formatDate(e.created_at);
+      li.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+        <div>
+          <strong>${escapeHtml(e.name)}</strong> – ${escapeHtml(e.location)}
+          ${e.message ? `<div class="meta">${escapeHtml(e.message)}</div>` : ''}
+        </div>
+        ${timestamp ? `<div style="color: white; font-size: 0.85em; white-space: nowrap; text-align: right;">${timestamp}</div>` : ''}
+      </div>`;
       listEl.appendChild(li);
     });
   }
@@ -52,9 +71,19 @@
 
     // Try to fetch live submissions from Netlify function (if deployed)
     fetch('/.netlify/functions/get-submissions')
-      .then(r => { if (!r.ok) throw new Error('not ok'); return r.json(); })
+      .then(r => { 
+        if (!r.ok) {
+          console.warn('Function returned status:', r.status);
+          throw new Error('not ok'); 
+        }
+        return r.json(); 
+      })
       .then(remote => {
-        if (!Array.isArray(remote)) return;
+        console.log('Fetched remote submissions:', remote);
+        if (!Array.isArray(remote)) {
+          console.warn('Remote data is not an array');
+          return;
+        }
         const combined = [].concat(localEntries, remote, staticEntries);
         // dedupe again
         const s = new Set();
@@ -64,9 +93,11 @@
           s.add(key);
           return true;
         });
+        console.log('Merged list:', finalList);
         renderList(listEl, finalList);
       })
-      .catch(() => {
+      .catch(err => {
+        console.warn('Fetch failed:', err.message);
         // If function not available, just keep the merged list
       });
   });
