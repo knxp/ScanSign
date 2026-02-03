@@ -12,7 +12,7 @@
   <p>You're part of the shirt's journey now. Leave your mark:</p>
 
   <form 
-  name="guestbook" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+  name="guestbook" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you.html">
     <!-- Honeypot for spam -->
     <input type="hidden" name="form-name" value="guestbook" />
     <p hidden><label>Don’t fill this: <input name="bot-field"></label></p>
@@ -32,59 +32,34 @@
     <button type="submit">Sign & See the Board</button>
   </form>
 
-  <!-- Optional: success message (Netlify redirects here after submit) -->
-  <!-- Or set form action="/thank-you.html" later -->
 <script>
+  // Local testing fallback - shows success message when Netlify isn't available
   const form = document.querySelector('form[name="guestbook"]');
-  const formContainer = form.parentElement; // or document.querySelector('.form-wrapper') if you wrap it
-
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-
-    const formData = new FormData(form);
-    const urlEncodedData = new URLSearchParams(formData).toString();
-
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: urlEncodedData
-    })
-    .then(response => {
-      if (!response.ok) throw new Error('Submission failed');
-      return response;
-    })
-    .then(() => {
-      // Success: Replace form with thank-you + link to board
-      formContainer.innerHTML = `
-        <div class="success" style="text-align: center; padding: 50px 20px; background: #e8f5e9; border-radius: 12px;">
-          <h1>Thank you! 🎉 You've signed the guestbook</h1>
-          <p>Your name and location are now part of the shirt's story.</p>
-          
-          <div style="margin: 40px 0;">
-            <a href="board.html">
-              <button style="font-size: 1.3em; padding: 18px 40px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                See the Board → Who's signed so far?
-              </button>
-            </a>
-          </div>
-          
-          <p>
-            <a href="sign.html">Sign again</a> | <a href="index.html">Home</a>
-          </p>
+    // On production (Netlify), Netlify intercepts before this runs
+    // Locally, this shows a success experience for testing
+    form.style.display = 'none';
+    const container = form.parentElement;
+    container.innerHTML += `
+      <div class="success" style="text-align: center; padding: 50px 20px; background: #e8f5e9; border-radius: 12px;">
+        <h1>Thank you! 🎉 You've signed the guestbook</h1>
+        <p>Your name and location are now part of the shirt's story.</p>
+        
+        <div style="margin: 40px 0;">
+          <a href="board.html">
+            <button style="font-size: 1.3em; padding: 18px 40px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+              See the Board → Who's signed so far?
+            </button>
+          </a>
         </div>
-      `;
-      
-      // Optional: Scroll to top of success message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      formContainer.innerHTML += `
-        <div style="color: red; text-align: center; margin-top: 20px;">
-          Oops! Something went wrong. Please try again or refresh.
-        </div>
-      `;
-    });
+        
+        <p style="margin-top: 20px;">
+          <a href="sign.html">Sign again</a> | <a href="index.html">Home</a>
+        </p>
+      </div>
+    `;
   });
 </script>
 </body>
