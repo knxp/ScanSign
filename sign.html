@@ -3,64 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign the T-Shirt Guestbook</title>
+  <title>Leave Your Name</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <h1>Sign In!</h1>
-  <p>You're part of the shirt's journey now. Leave your mark:</p>
-
+  <h1 class="gradient-text">Sign Here</h1>
+<p style="color: #8b949e; text-align: center;">At least make it funny</p>
   <form 
   name="guestbook" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you.html">
     <!-- Honeypot for spam -->
     <input type="hidden" name="form-name" value="guestbook" />
     <p hidden><label>Don’t fill this: <input name="bot-field"></label></p>
 
-    <label>Your Name
-      <input type="text" name="name" required placeholder="Alex" />
+    <label>Name
+      <input type="text" name="name" required placeholder="don't dox yourself" />
     </label>
 
-    <label>Location (city, country, or just country)
-      <input type="text" name="location" required placeholder="Berlin, Germany" />
+    <label>Location
+      <input type="text" name="location" required placeholder="where'd you see me" />
     </label>
 
-    <label>Optional Message / How you found the shirt
-      <textarea name="message" rows="4" placeholder="Saw it at the conference!"></textarea>
+    <label>Optional Message
+      <textarea name="message" rows="4" placeholder="n words are sent directly to your boss"></textarea>
     </label>
 
     <button type="submit">Sign & See the Board</button>
   </form>
+    <script>
+      // Submit via POST to Netlify, save locally, show 3s modal, then redirect to board
+      const form = document.querySelector('form[name="guestbook"]');
 
-<script>
-  // Local testing fallback - shows success message when Netlify isn't available
-  const form = document.querySelector('form[name="guestbook"]');
-  
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    // On production (Netlify), Netlify intercepts before this runs
-    // Locally, this shows a success experience for testing
-    form.style.display = 'none';
-    const container = form.parentElement;
-    container.innerHTML += `
-      <div class="success" style="text-align: center; padding: 50px 20px; background: #e8f5e9; border-radius: 12px;">
-        <h1>Thank you! 🎉 You've signed the guestbook</h1>
-        <p>Your name and location are now part of the shirt's story.</p>
-        
-        <div style="margin: 40px 0;">
-          <a href="board.html">
-            <button style="font-size: 1.3em; padding: 18px 40px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">
-              See the Board → Who's signed so far?
-            </button>
-          </a>
-        </div>
-        
-        <p style="margin-top: 20px;">
-          <a href="sign.html">Sign again</a> | <a href="index.html">Home</a>
-        </p>
-      </div>
-    `;
-  });
-</script>
+      function saveLocalEntry(entry) {
+        try {
+          const key = 'guestbook-local';
+          const existing = JSON.parse(localStorage.getItem(key) || '[]');
+          existing.unshift(entry);
+          // keep recent 200 locally
+          localStorage.setItem(key, JSON.stringify(existing.slice(0, 200)));
+        } catch (e) {
+          console.error('localStorage error', e);
+        }
+      }
+
+      function showModalAndRedirect() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+          <div class="modal-card">
+            <h2>One Sec</h2>
+            <p>Forwarding your information to the Indian Call Center...</p>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        setTimeout(() => {
+          modal.classList.add('hide');
+        }, 2600);
+        setTimeout(() => { window.location.href = 'board.html'; }, 3000);
+      }
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const entry = {
+          name: formData.get('name') || '',
+          location: formData.get('location') || '',
+          message: formData.get('message') || '',
+          created_at: new Date().toISOString()
+        };
+
+        // Try to POST to Netlify endpoint; ignore errors locally
+        const urlEncoded = new URLSearchParams(formData).toString();
+        try {
+          await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: urlEncoded
+          });
+        } catch (err) {
+          // ignore — local dev won't accept POST
+          console.warn('Netlify POST failed (expected in local):', err.message);
+        }
+
+        // Save locally so board shows it immediately
+        saveLocalEntry(entry);
+
+        // Hide heading/subtitle/form and show modal
+        const h = document.querySelector('h1'); if (h) h.style.display = 'none';
+        const subtitle = document.querySelector('p'); if (subtitle) subtitle.style.display = 'none';
+        form.style.display = 'none';
+        showModalAndRedirect();
+      });
+    </script>
 </body>
 </html>

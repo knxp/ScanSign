@@ -3,22 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guestbook Board – T-Shirt Travelers</title>
+  <title>Board</title>
   <link rel="stylesheet" href="styles.css">
   <script src="data.js"></script>
 <script>
-  const list = document.querySelector('.entries');
-  entries.forEach(e => {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${e.name}</strong> – ${e.location}
-      ${e.message ? `<div class="meta">${e.message}</div>` : ''}`;
-    list.appendChild(li);
+  // Render entries from data.js, localStorage, and Netlify function
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderList(listEl, items) {
+    listEl.innerHTML = '';
+    items.forEach(e => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${escapeHtml(e.name)}</strong> – ${escapeHtml(e.location)}
+        ${e.message ? `<div class="meta">${escapeHtml(e.message)}</div>` : ''}`;
+      listEl.appendChild(li);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const listEl = document.querySelector('.entries');
+
+    // Start with bundled static entries from data.js (if present)
+    const staticEntries = (typeof entries !== 'undefined' && Array.isArray(entries)) ? entries.slice() : [];
+
+    // Local entries saved immediately after signing
+    const localEntries = JSON.parse(localStorage.getItem('guestbook-local') || '[]');
+
+    // Merge local first so new submissions appear at top
+    let merged = [].concat(localEntries, staticEntries);
+
+    // Simple dedupe helper
+    const seen = new Set();
+    merged = merged.filter(item => {
+      const key = `${item.name}||${item.location}||${item.message}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    renderList(listEl, merged);
+
+    // Try to fetch live submissions from Netlify function (if deployed)
+    fetch('/.netlify/functions/get-submissions')
+      .then(r => { if (!r.ok) throw new Error('not ok'); return r.json(); })
+      .then(remote => {
+        if (!Array.isArray(remote)) return;
+        const combined = [].concat(localEntries, remote, staticEntries);
+        // dedupe again
+        const s = new Set();
+        const finalList = combined.filter(item => {
+          const key = `${item.name}||${item.location}||${item.message}`;
+          if (s.has(key)) return false;
+          s.add(key);
+          return true;
+        });
+        renderList(listEl, finalList);
+      })
+      .catch(() => {
+        // If function not available, just keep the merged list
+      });
   });
 </script>
 </head>
 <body>
-  <h1>The Guestbook Board</h1>
-  <p>Everyone who's scanned and signed so far (updated occasionally):</p>
+  <h1 class="gradient-text">The Board</h1>
+<p style="color: #8b949e; text-align: center;">Hopefully this is the only list you're on.</p>
 
   <ul class="entries">
     <!-- Example entry – replace with real ones -->
@@ -29,8 +85,8 @@
     <!-- Add more <li> here manually after checking Netlify dashboard -->
   </ul>
 
-  <p style="text-align:center; margin-top:40px;">
+  <!-- <p style="text-align:center; margin-top:40px;">
     <a href="sign.html">← Back to sign</a> | <a href="index.html">Home</a>
-  </p>
+  </p> -->
 </body>
 </html>

@@ -1,54 +1,152 @@
+@font-face {
+  font-family: 'BlinkMacSystemFont';
+  src: url('BlinkMacSystemFont-Black.woff2') format('woff2'),
+       url('BlinkMacSystemFont-Bold.woff') format('woff'),
+       url('blinkmacsystemfont-black.ttf') format('truetype');
+  font-weight: bold;
+}
+
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'BlinkMacSystemFont', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
-  background: #f9f9f9;
-  color: #333;
+  background: #0d1117;
+  color: #e6edf3;
 }
 
 h1, h2 {
   text-align: center;
-  color: #222;
+  color: #58a6ff;
+  font-weight: bold;
+}
+
+h1.gradient-text {
+  background: linear-gradient(135deg, #58a6ff 0%, #3fb950 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  gap: 20px;
+}
+
+.hero h1 {
+  font-size: 2.5em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.3em;
+  color: #8b949e;
+  margin: 0;
+  max-width: 500px;
+}
+
+.cta-section {
+  font-weight: bold;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cta-section button {
+  font-size: 1.4em;
+  padding: 16px 36px;
+  min-width: 280px;
+}
+
+.secondary-cta {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid #30363d;
+}
+
+.secondary-cta p {
+  color: #8b949e;
+  margin: 0;
+  font-size: 1em;
+}
+
+.secondary-cta a {
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.secondary-cta a:hover {
+  color: #58a6ff;
+}
+
+a {
+  color: #3fb950;
+}
+
+a:visited {
+  color: #3fb950;
 }
 
 form {
-  background: white;
+  background: #161b22;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #30363d;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 label {
   display: block;
   margin: 20px 0 8px;
-  font-weight: 600;
+  font-weight: bold;
+  color: #58a6ff;
 }
 
 input, textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid #30363d;
   border-radius: 6px;
   box-sizing: border-box;
   font-size: 16px;
+  background: #0d1117;
+  color: #8b949e;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
 }
 
 button {
-  background: #4CAF50;
-  color: white;
+  font-family: 'BlinkMacSystemFont', system-ui, -apple-system, sans-serif;
+  background: #3ed459;
+  color: #0d1117;
   border: none;
   padding: 14px 28px;
-  font-size: 18px;
-  border-radius: 6px;
+  font-size: 30px;
+  font-weight: bold;
+  border-radius: 7px;
   cursor: pointer;
   margin-top: 20px;
   width: 100%;
+  transition: background 0.2s;
 }
 
 button:hover {
-  background: #45a049;
+  background: #2ea043;
 }
 
 ul.entries {
@@ -57,15 +155,21 @@ ul.entries {
 }
 
 ul.entries li {
-  background: white;
+  background: #161b22;
   margin: 12px 0;
   padding: 18px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #30363d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+ul.entries li strong {
+  font-weight: bold;
+  color: #3fb950;
 }
 
 .meta {
-  color: #777;
+  color: #8b949e;
   font-size: 0.9em;
   margin-top: 8px;
 }
@@ -73,6 +177,35 @@ ul.entries li {
 .success {
   text-align: center;
   padding: 40px;
-  background: #e8f5e9;
+  background: #161b22;
+  border: 1px solid #30363d;
   border-radius: 12px;
 }
+
+/* Modal for quick thank-you popup */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3,6,10,0.6);
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.modal.hide { opacity: 0; pointer-events: none; }
+
+.modal-card {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  padding: 28px 36px;
+  border-radius: 12px;
+  text-align: center;
+  color: #8b949e;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.8);
+}
+
+.modal-card h2 { margin: 0 0 8px; color: #58a6ff; }
+.modal-card p { margin: 0; color: #8b949e; }
