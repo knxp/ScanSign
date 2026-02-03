@@ -35,13 +35,13 @@
     items.forEach(e => {
       const li = document.createElement('li');
       const timestamp = formatDate(e.created_at);
-      li.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+      li.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 8px;">
         <div>
-          <strong>${escapeHtml(e.name)}</strong> – ${escapeHtml(e.location)}
-          ${e.message ? `<div class="meta">${escapeHtml(e.message)}</div>` : ''}
+          <strong>${escapeHtml(e.name)}</strong> – <span class="location">${escapeHtml(e.location)}</span>
         </div>
         ${timestamp ? `<div style="color: white; font-size: 0.85em; white-space: nowrap; text-align: right;">${timestamp}</div>` : ''}
-      </div>`;
+      </div>
+      ${e.message ? `<div class="meta">${escapeHtml(e.message)}</div>` : ''}`;
       listEl.appendChild(li);
     });
   }
@@ -67,8 +67,16 @@
       return true;
     });
 
+    // Sort by most recent first
+    merged.sort((a, b) => {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    });
+
     renderList(listEl, merged);
 
+    // Try to fetch live submissions from Netlify function (if deployed)
     // Try to fetch live submissions from Netlify function (if deployed)
     fetch('/.netlify/functions/get-submissions')
       .then(r => { 
@@ -87,11 +95,17 @@
         const combined = [].concat(localEntries, remote, staticEntries);
         // dedupe again
         const s = new Set();
-        const finalList = combined.filter(item => {
+        let finalList = combined.filter(item => {
           const key = `${item.name}||${item.location}||${item.message}`;
           if (s.has(key)) return false;
           s.add(key);
           return true;
+        });
+        // Sort by most recent first
+        finalList.sort((a, b) => {
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return dateB - dateA;
         });
         console.log('Merged list:', finalList);
         renderList(listEl, finalList);

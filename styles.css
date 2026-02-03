@@ -1,8 +1,8 @@
 @font-face {
   font-family: 'BlinkMacSystemFont';
-  src: url('BlinkMacSystemFont-Black.woff2') format('woff2'),
-       url('BlinkMacSystemFont-Bold.woff') format('woff'),
-       url('blinkmacsystemfont-black.ttf') format('truetype');
+  src: url('fonts/BlinkMacSystemFont-Black.woff2') format('woff2'),
+       url('fonts/BlinkMacSystemFont-Bold.woff') format('woff'),
+       url('fonts/blinkmacsystemfont-black.ttf') format('truetype');
   font-weight: bold;
 }
 
@@ -161,11 +161,17 @@ ul.entries li {
   border-radius: 10px;
   border: 1px solid #30363d;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 ul.entries li strong {
   font-weight: bold;
   color: #3fb950;
+}
+
+.location {
+  color: #58a6ff;
 }
 
 .meta {
