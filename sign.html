@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign the T-Shirt Guestbook</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Sign In!</h1>
+  <p>You're part of the shirt's journey now. Leave your mark:</p>
+
+  <form name="guestbook" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+    <!-- Honeypot for spam -->
+    <input type="hidden" name="form-name" value="guestbook" />
+    <p hidden><label>Don’t fill this: <input name="bot-field"></label></p>
+
+    <label>Your Name
+      <input type="text" name="name" required placeholder="Alex" />
+    </label>
+
+    <label>Location (city, country, or just country)
+      <input type="text" name="location" required placeholder="Berlin, Germany" />
+    </label>
+
+    <label>Optional Message / How you found the shirt
+      <textarea name="message" rows="4" placeholder="Saw it at the conference!"></textarea>
+    </label>
+
+    <button type="submit">Sign & See the Board</button>
+  </form>
+
+  <!-- Optional: success message (Netlify redirects here after submit) -->
+  <!-- Or set form action="/thank-you.html" later -->
+
+  <script>
+    // Optional: After submit, you can redirect to board.html via Netlify setting
+    // Or add JS to show a thank you message
+  </script>
+</body>
+</html>

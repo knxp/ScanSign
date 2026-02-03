@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guestbook Board – T-Shirt Travelers</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js"></script>
+<script>
+  const list = document.querySelector('.entries');
+  entries.forEach(e => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${e.name}</strong> – ${e.location}
+      ${e.message ? `<div class="meta">${e.message}</div>` : ''}`;
+    list.appendChild(li);
+  });
+</script>
+</head>
+<body>
+  <h1>The Guestbook Board</h1>
+  <p>Everyone who's scanned and signed so far (updated occasionally):</p>
+
+  <ul class="entries">
+    <!-- Example entry – replace with real ones -->
+    <li>
+      <strong>Jamie</strong> – Austin, TX
+      <div class="meta">Saw it on the subway – cool idea!</div>
+    </li>
+    <!-- Add more <li> here manually after checking Netlify dashboard -->
+  </ul>
+
+  <p style="text-align:center; margin-top:40px;">
+    <a href="sign.html">← Back to sign</a> | <a href="index.html">Home</a>
+  </p>
+</body>
+</html>
