@@ -25,7 +25,7 @@
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+        return `${month}/${day}/${year}`;
       } catch {
         return '';
       }
@@ -124,8 +124,7 @@
   <ul class="entries">
     <!-- Example entry – replace with real ones -->
     <li>
-      <strong>Jamie</strong> – Austin, TX
-      <div class="meta">Saw it on the subway – cool idea!</div>
+      
     </li>
     <!-- Add more <li> here manually after checking Netlify dashboard -->
   </ul>
